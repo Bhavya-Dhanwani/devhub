@@ -1,0 +1,189 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.state {
+  min-height: 180px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  border: 1px solid #243044;
+  border-radius: 14px;
+  background: #111a28;
+  color: #aeb8c4;
+  text-align: center;
+}
+
+.state svg {
+  color: var(--primary-light);
+}
+
+.card {
+  position: relative;
+  min-width: 0;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid #243044;
+  border-radius: 18px;
+  background: #111a28;
+  color: inherit;
+  padding: 16px;
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+.card:hover,
+.card:focus-visible {
+  border-color: color-mix(in srgb, var(--primary) 42%, #243044);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.cardTop,
+.menu summary,
+.menuPanel a,
+.menuPanel button {
+  display: flex;
+  align-items: center;
+}
+
+.cardTop {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.badge {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border-radius: 999px;
+  background: rgba(34, 229, 143, 0.1);
+  color: var(--primary-light);
+  padding: 6px 10px;
+  font-size: 0.76rem;
+  font-weight: 850;
+}
+
+.menu {
+  position: relative;
+}
+
+.menu summary {
+  width: 32px;
+  height: 32px;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: #c8d1db;
+  cursor: pointer;
+  list-style: none;
+  transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
+}
+
+.menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.menu summary:hover {
+  border-color: #303d4e;
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+}
+
+.menuPanel {
+  position: absolute;
+  top: 38px;
+  right: 0;
+  z-index: 10;
+  min-width: 150px;
+  overflow: hidden;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  background: #101417;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
+}
+
+.menuPanel a,
+.menuPanel button {
+  width: 100%;
+  gap: 8px;
+  border: 0;
+  background: transparent;
+  color: #d8e1eb;
+  cursor: pointer;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 850;
+  text-align: left;
+}
+
+.menuPanel a:hover,
+.menuPanel button:hover {
+  background: #1b2024;
+  color: var(--primary-light);
+}
+
+.menuPanel .dangerAction {
+  color: #ff9f9f;
+}
+
+.cardLink {
+  display: block;
+  color: inherit;
+}
+
+.cardLink h3 {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #ffffff;
+  font-size: 1.05rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.cardLink p {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 8px;
+  color: #aeb8c4;
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.green {
+  background: linear-gradient(180deg, #152a25, #111a28);
+}
+
+.blue {
+  background: linear-gradient(180deg, #15253a, #111a28);
+}
+
+.violet {
+  background: linear-gradient(180deg, #241c36, #111a28);
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .card {
+    min-height: 150px;
+    aspect-ratio: auto;
+    border-radius: 14px;
+    padding: 14px;
+  }
+}
