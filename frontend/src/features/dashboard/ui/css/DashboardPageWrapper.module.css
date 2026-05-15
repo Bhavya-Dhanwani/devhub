@@ -2,6 +2,7 @@
   min-height: 100vh;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
+  align-content: start;
   background: #050b14;
   color: #f5f7fb;
 }
@@ -20,6 +21,33 @@
   }
 
   .content {
-    padding: 24px 14px 88px;
+    padding: 14px 12px 72px;
   }
+}
+
+.followButton,
+.followingButton {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid color-mix(in srgb, var(--primary) 55%, #2f3947);
+  border-radius: 10px;
+  background: var(--primary);
+  color: #03140c;
+  cursor: pointer;
+  padding: 0 14px;
+  font-size: 0.88rem;
+  font-weight: 900;
+}
+
+.followingButton {
+  background: #111923;
+  color: var(--primary-light);
+}
+
+.followButton:disabled,
+.followingButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
 }

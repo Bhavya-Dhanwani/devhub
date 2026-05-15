@@ -5,6 +5,24 @@
   align-items: start;
 }
 
+.banner {
+  grid-column: 1 / -1;
+  position: relative;
+  min-height: 150px;
+  overflow: hidden;
+  border: 1px solid #2d3748;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(34, 229, 143, 0.18), transparent 32%),
+    linear-gradient(135deg, #111923, #182231);
+}
+
+.bannerImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .avatarWrap {
   display: flex;
   justify-content: center;
@@ -107,6 +125,80 @@
   overflow-wrap: anywhere;
 }
 
+.profileShowcase {
+  display: grid;
+  gap: 14px;
+  margin-top: 6px;
+}
+
+.profileShowcase section {
+  display: grid;
+  gap: 9px;
+}
+
+.profileShowcase h2 {
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.skillList,
+.socialList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skillList span,
+.socialList a {
+  border: 1px solid #2f3947;
+  border-radius: 999px;
+  background: #111923;
+  color: #d8e1eb;
+  padding: 7px 10px;
+  font-size: 0.8rem;
+  font-weight: 850;
+}
+
+.socialList a:hover {
+  border-color: color-mix(in srgb, var(--primary) 50%, #2f3947);
+  color: var(--primary-light);
+}
+
+.portfolioList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.portfolioList a {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+  border: 1px solid #2f3947;
+  border-radius: 12px;
+  background: #111923;
+  color: #d8e1eb;
+  padding: 12px;
+}
+
+.portfolioList strong,
+.portfolioList span {
+  overflow-wrap: anywhere;
+}
+
+.portfolioList strong {
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.portfolioList span {
+  color: #aeb8c4;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
 .actions {
   margin-top: 8px;
   display: flex;
@@ -135,12 +227,230 @@
   transform: translateY(-1px);
 }
 
-.actions > :last-child {
-  display: none;
+.actions .logoutButton {
+  border-color: color-mix(in srgb, var(--destructive) 46%, #2f3947);
+  color: #fecaca;
+}
+
+.actions .logoutButton:hover {
+  border-color: color-mix(in srgb, var(--destructive) 72%, #2f3947);
+  background: color-mix(in srgb, var(--destructive) 13%, #111923);
+  color: #ffffff;
 }
 
 .insight {
   display: none;
+}
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  background: rgba(2, 6, 12, 0.72);
+  padding: 20px;
+}
+
+.editModal {
+  width: min(100%, 520px);
+  max-height: min(86vh, 860px);
+  overflow-y: auto;
+  border: 1px solid #303947;
+  border-radius: 18px;
+  background: #111820;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+  padding: 22px;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.modalHeader h2 {
+  color: #ffffff;
+  font-size: 1.14rem;
+  font-weight: 900;
+}
+
+.modalHeader p {
+  margin-top: 5px;
+  color: #aeb8c4;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.closeButton {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #303947;
+  border-radius: 999px;
+  background: #151f2b;
+  color: #d7dee8;
+  cursor: pointer;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.avatarEditor {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.removeAssetButton,
+.assetActions button,
+.groupHeader button,
+.portfolioEditorItem button {
+  border: 1px solid #303947;
+  border-radius: 9px;
+  background: #0c1218;
+  color: #d8e1eb;
+  cursor: pointer;
+  padding: 8px 10px;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.removeAssetButton {
+  margin-top: 8px;
+}
+
+.bannerEditor {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.bannerPicker {
+  position: relative;
+  min-height: 116px;
+  overflow: hidden;
+  border: 1px dashed #303947;
+  border-radius: 14px;
+  background: #0c1218;
+  color: #aeb8c4;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.assetActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.avatarPicker {
+  width: 74px;
+  height: 74px;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  border: 2px solid #2a3343;
+  border-radius: 999px;
+  background: #131d2d;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+
+.avatarEditor strong {
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+
+.avatarEditor p {
+  margin-top: 4px;
+  color: #aeb8c4;
+  font-size: 0.82rem;
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+  margin-top: 16px;
+}
+
+.field span {
+  color: #d9e0ec;
+  font-size: 0.84rem;
+  font-weight: 850;
+}
+
+.field input,
+.field textarea,
+.fieldGroup input,
+.fieldGroup textarea {
+  width: 100%;
+  border: 1px solid #303947;
+  border-radius: 12px;
+  background: #0c1218;
+  color: #f5f7fb;
+  font: inherit;
+  outline: none;
+  padding: 12px 13px;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus,
+.fieldGroup input:focus,
+.fieldGroup textarea:focus {
+  border-color: color-mix(in srgb, var(--primary) 58%, #303947);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 13%, transparent);
+}
+
+.fieldGroup {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.fieldGroup > span,
+.groupHeader span {
+  color: #d9e0ec;
+  font-size: 0.84rem;
+  font-weight: 850;
+}
+
+.groupHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.portfolioEditorItem {
+  display: grid;
+  gap: 8px;
+  border: 1px solid #26313d;
+  border-radius: 12px;
+  background: #0c1218;
+  padding: 10px;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modalActions button {
+  min-height: 40px;
+  border-radius: 10px;
+  padding: 0 16px;
+  font-weight: 850;
 }
 
 .verifyStrip {
@@ -156,6 +466,10 @@
     justify-items: center;
   }
 
+  .banner {
+    width: 100%;
+  }
+
   .main {
     width: 100%;
   }
@@ -163,7 +477,7 @@
 
 @media (max-width: 740px) {
   .header {
-    gap: 14px;
+    gap: 8px;
   }
 
   .avatarWrap {
@@ -175,6 +489,7 @@
     grid-template-columns: 40px minmax(0, 1fr) 40px;
     align-items: center;
     gap: 8px;
+    min-height: 34px;
   }
 
   .mobileTopBar p {
@@ -192,7 +507,7 @@
 
   .mobileIconButton {
     width: 40px;
-    height: 40px;
+    height: 34px;
     border: 0;
     border-radius: 999px;
     display: grid;
@@ -202,7 +517,7 @@
   }
 
   .identityRow {
-    margin-top: 6px;
+    margin-top: 0;
   }
 
   .identityRow h1 {
@@ -222,7 +537,7 @@
     grid-template-columns: 96px minmax(0, 1fr);
     gap: 10px;
     align-items: center;
-    margin-top: 2px;
+    margin-top: 0;
   }
 
   .mobileAvatar {
@@ -282,8 +597,7 @@
     grid-template-columns: 1fr 1fr;
   }
 
-  .actions > :last-child {
-    display: inline-flex;
+  .actions .logoutButton {
     grid-column: 1 / -1;
   }
 
@@ -296,5 +610,18 @@
 
   .insight strong {
     color: #f5f7fb;
+  }
+
+  .editModal {
+    padding: 18px;
+  }
+
+  .modalActions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .portfolioList {
+    grid-template-columns: 1fr;
   }
 }

@@ -28,7 +28,6 @@ export function useForgotPasswordForm() {
     } catch (error) {
       const errorMessage = getApiErrorMessage(error) || "Could not send reset email.";
       setStatus("error");
-      setMessage(errorMessage);
       toast.error(errorMessage);
     }
   };

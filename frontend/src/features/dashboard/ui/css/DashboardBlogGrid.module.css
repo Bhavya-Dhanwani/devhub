@@ -54,6 +54,8 @@
 }
 
 .cardTop {
+  position: relative;
+  z-index: 2;
   justify-content: space-between;
   gap: 12px;
 }
@@ -136,8 +138,18 @@
 }
 
 .cardLink {
+  position: relative;
+  z-index: 1;
   display: block;
   color: inherit;
+}
+
+.cardLink::before {
+  content: "";
+  position: absolute;
+  inset: -120px -16px -16px;
+  z-index: -1;
+  border-radius: 18px;
 }
 
 .cardLink h3 {

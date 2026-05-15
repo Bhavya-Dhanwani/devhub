@@ -71,6 +71,12 @@ const authSlice = createSlice({
       state.error = null;
       state.bootstrapped = true;
     },
+    updateCurrentUser: (state, action) => {
+      state.user = {
+        ...(state.user || {}),
+        ...action.payload,
+      };
+    },
     clearCredentials: (state) => {
       state.user = null;
       state.accessToken = null;
@@ -103,6 +109,13 @@ const authSlice = createSlice({
         state.error = null;
         state.bootstrapped = true;
       })
+      .addCase(logoutUser.rejected, (state) => {
+        state.user = null;
+        state.accessToken = null;
+        state.status = "unauthenticated";
+        state.error = null;
+        state.bootstrapped = true;
+      })
       .addCase(verifyEmailUser.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.error = null;
@@ -129,6 +142,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { setCredentials, clearCredentials } = authSlice.actions;
+export const { setCredentials, updateCurrentUser, clearCredentials } = authSlice.actions;
 export const selectAuth = (state) => state.auth;
 export default authSlice.reducer;

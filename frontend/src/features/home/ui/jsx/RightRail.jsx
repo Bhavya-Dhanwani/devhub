@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import styles from "../css/HomePage.module.css";
 
@@ -19,35 +20,47 @@ export function RightRail({ blogs = [] }) {
       {recentActivity.length ? recentActivity.map((item) => (
         <article className={styles.commentItem} key={item._id}>
           <strong>{item.title}</strong>
-          <p>{item.commentsCount} comments on this post</p>
+          <p>{item.commentsCount} comments on this {item.contentType === "project" ? "project" : "post"}</p>
           <span>{item.author?.name || "DevHub writer"} · {formatRelativeDate(item.createdAt)}</span>
         </article>
       )) : (
         <article className={styles.commentItem}>
           <strong>No comments yet</strong>
-          <p>Published blogs will show discussion activity here.</p>
+          <p>Published blogs and projects will show discussion activity here.</p>
           <span>Live data</span>
         </article>
       )}
 
       <section className={styles.sideSection}>
         <h2>Active writers</h2>
-        {activeWriters.map(([initials, name, text, badge, avatar]) => (
-          <article className={styles.writerItem} key={name}>
-            <span>
-              {avatar ? (
-                <Image src={avatar} alt="" width={38} height={38} unoptimized />
-              ) : (
-                initials
-              )}
-            </span>
-            <div>
-              <strong>{name}</strong>
-              <p>{text}</p>
-              <em>{badge}</em>
-            </div>
-          </article>
-        ))}
+        {activeWriters.map(([initials, name, text, badge, avatar, authorId]) => {
+          const content = (
+            <>
+              <span>
+                {avatar ? (
+                  <Image src={avatar} alt="" width={38} height={38} unoptimized />
+                ) : (
+                  initials
+                )}
+              </span>
+              <div>
+                <strong>{name}</strong>
+                <p>{text}</p>
+                <em>{badge}</em>
+              </div>
+            </>
+          );
+
+          return authorId ? (
+            <Link className={styles.writerItem} href={`/users/${authorId}`} key={authorId}>
+              {content}
+            </Link>
+          ) : (
+            <article className={styles.writerItem} key={name}>
+              {content}
+            </article>
+          );
+        })}
       </section>
 
       <section className={styles.sideSection}>
@@ -87,9 +100,13 @@ function getActiveWriters(blogs) {
 
   for (const blog of blogs) {
     const name = blog.author?.name || "DevHub writer";
-    const current = writers.get(name) || { avatar: blog.author?.avatar || "", posts: 0, views: 0 };
-    writers.set(name, {
+    const authorId = blog.author?._id || "";
+    const writerKey = authorId || name;
+    const current = writers.get(writerKey) || { avatar: blog.author?.avatar || "", id: authorId, name, posts: 0, views: 0 };
+    writers.set(writerKey, {
       avatar: current.avatar || blog.author?.avatar || "",
+      id: current.id || authorId,
+      name,
       posts: current.posts + 1,
       views: current.views + (blog.views || 0),
     });
@@ -98,12 +115,13 @@ function getActiveWriters(blogs) {
   return [...writers.entries()]
     .sort(([, first], [, second]) => second.posts - first.posts || second.views - first.views)
     .slice(0, 3)
-    .map(([name, stats]) => [
-      getInitials(name),
-      name,
+    .map(([, stats]) => [
+      getInitials(stats.name),
+      stats.name,
       `${stats.views} total views`,
-      `${stats.posts} ${stats.posts === 1 ? "post" : "posts"}`,
+      `${stats.posts} ${stats.posts === 1 ? "item" : "items"}`,
       stats.avatar,
+      stats.id,
     ]);
 }
 
@@ -138,9 +156,9 @@ function getCategoryRanks(blogs) {
     .slice(0, 10)
     .map(([category, stats]) => [
       category,
-      "Published blogs",
+      "Published content",
       `${stats.views} views`,
-      `${stats.posts} ${stats.posts === 1 ? "post" : "posts"}`,
+      `${stats.posts} ${stats.posts === 1 ? "item" : "items"}`,
     ]);
 }
 

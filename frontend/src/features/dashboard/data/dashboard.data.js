@@ -8,7 +8,7 @@ export const dashboardHighlights = [
 ];
 
 export const dashboardTabs = [
-  { id: "all", label: "all blogs" },
+  { id: "all", label: "all work" },
   { id: "published", label: "published" },
   { id: "draft", label: "drafts" },
 ];

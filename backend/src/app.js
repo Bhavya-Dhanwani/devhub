@@ -5,13 +5,15 @@ import { env } from "./config/env.js";
 import authRoutes from "./routes/auth.routes.js";
 import blogRoutes from "./routes/blog.routes.js";
 import protectedRoutes from "./routes/protected.routes.js";
+import searchRoutes from "./routes/search.routes.js";
+import userRoutes from "./routes/user.routes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 
 app.use(
   cors({
-    origin: env.CLIENT_URL,
+    origin: true,
     credentials: true,
   }),
 );
@@ -25,6 +27,9 @@ app.get("/health", (_req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/blogs", blogRoutes);
+app.use("/api/projects", blogRoutes);
+app.use("/api/search", searchRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/protected", protectedRoutes);
 
 app.use(errorHandler);

@@ -11,9 +11,17 @@ function toAuthUser(user) {
   return {
     id: user._id.toString(),
     name: user.name,
+    username: user.username || "",
     email: user.email,
     avatar: user.avatar || "",
+    banner: user.banner || "",
+    bio: user.bio || "",
+    skills: user.skills || [],
+    socialLinks: user.socialLinks || {},
+    portfolio: user.portfolio || [],
     isEmailVerified: user.isEmailVerified,
+    followersCount: user.followers?.length || 0,
+    followingCount: user.following?.length || 0,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };
@@ -54,8 +62,12 @@ export async function signup({ name, email, password, avatar = "" }) {
 export async function login({ email, password }) {
   const user = await User.findOne({ email }).select("+password +refreshTokenHash");
 
-  if (!user || !(await user.comparePassword(password))) {
-    throw new ApiError(401, "Invalid email or password.");
+  if (!user) {
+    throw new ApiError(404, "Email does not exist.");
+  }
+
+  if (!(await user.comparePassword(password))) {
+    throw new ApiError(401, "Password is incorrect.");
   }
 
   const tokens = await issueTokens(user);

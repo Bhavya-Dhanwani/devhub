@@ -63,6 +63,45 @@ export async function deleteImageFromCloudinary(publicId) {
   }
 }
 
+export async function deleteProfileImageFromCloudinaryUrl(imageUrl) {
+  const publicId = getCloudinaryPublicIdFromUrl(imageUrl);
+
+  if (!publicId || !isProfileAssetPublicId(publicId)) {
+    return;
+  }
+
+  await deleteImageFromCloudinary(publicId);
+}
+
+function isProfileAssetPublicId(publicId) {
+  return publicId.startsWith("devhub/profile-pictures/") || publicId.startsWith("devhub/profile-banners/");
+}
+
+function getCloudinaryPublicIdFromUrl(imageUrl) {
+  if (!imageUrl) {
+    return "";
+  }
+
+  try {
+    const { pathname } = new URL(imageUrl);
+    const uploadPath = pathname.split("/upload/")[1];
+
+    if (!uploadPath) {
+      return "";
+    }
+
+    const pathParts = uploadPath.split("/").filter(Boolean);
+    const publicIdParts = pathParts[0]?.startsWith("v") && /^\d+$/.test(pathParts[0].slice(1))
+      ? pathParts.slice(1)
+      : pathParts;
+    const publicIdWithExtension = publicIdParts.join("/");
+
+    return decodeURIComponent(publicIdWithExtension.replace(/\.[^.]+$/, ""));
+  } catch {
+    return "";
+  }
+}
+
 function assertCloudinaryConfigured() {
   if (!env.CLOUDINARY_CLOUD_NAME || !env.CLOUDINARY_API_KEY || !env.CLOUDINARY_API_SECRET) {
     throw new ApiError(500, "Cloudinary is not configured.");

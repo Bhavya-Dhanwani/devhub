@@ -17,6 +17,19 @@ let getAccessToken = () => null;
 let handleRefresh = () => {};
 let handleAuthFailure = () => {};
 
+const refreshExcludedPaths = [
+  "/auth/login",
+  "/auth/signup",
+  "/auth/refresh",
+  "/auth/forgot-password",
+  "/auth/reset-password",
+];
+
+function shouldAttemptTokenRefresh(request) {
+  const url = request?.url || "";
+  return !refreshExcludedPaths.some((path) => url.includes(path));
+}
+
 export function configureApiAuth(handlers) {
   getAccessToken = handlers.getAccessToken;
   handleRefresh = handlers.onRefresh;
@@ -38,7 +51,12 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status !== 401 || !originalRequest || originalRequest._retry) {
+    if (
+      error.response?.status !== 401 ||
+      !originalRequest ||
+      originalRequest._retry ||
+      !shouldAttemptTokenRefresh(originalRequest)
+    ) {
       return Promise.reject(error);
     }
 
@@ -66,7 +84,13 @@ apiClient.interceptors.response.use(
 
 export function getApiErrorMessage(error) {
   if (axios.isAxiosError(error)) {
-    return error.response?.data?.message || error.message;
+    const message = error.response?.data?.message || error.message;
+
+    if (message?.toLowerCase().startsWith("refresh token")) {
+      return "Please sign in again.";
+    }
+
+    return message;
   }
 
   if (error instanceof Error) {

@@ -13,4 +13,5 @@ export function useAuthBootstrap() {
       dispatch(bootstrapAuth());
     }
   }, [bootstrapped, dispatch]);
+  return { bootstrapped };
 }

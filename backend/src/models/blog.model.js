@@ -54,6 +54,12 @@ const blogSchema = new mongoose.Schema(
       trim: true,
       index: true,
     },
+    contentType: {
+      type: String,
+      enum: ["blog", "project"],
+      default: "blog",
+      index: true,
+    },
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -78,6 +84,18 @@ const blogSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    likedBy: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+      default: [],
+      select: false,
+    },
+    bookmarkedBy: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+      default: [],
+      select: false,
+    },
     commentsCount: {
       type: Number,
       default: 0,
@@ -90,10 +108,37 @@ const blogSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-blogSchema.index({ title: "text", heading: "text", subheading: "text", content: "text", tags: "text" });
+blogSchema.index(
+  {
+    title: "text",
+    heading: "text",
+    subheading: "text",
+    excerpt: "text",
+    content: "text",
+    tags: "text",
+    category: "text",
+    contentType: "text",
+  },
+  {
+    weights: {
+      title: 12,
+      tags: 10,
+      category: 8,
+      contentType: 3,
+      heading: 6,
+      subheading: 5,
+      excerpt: 4,
+      content: 1,
+    },
+    name: "BlogSearchIndex",
+  },
+);
 blogSchema.index({ createdAt: -1 });
 blogSchema.index({ views: -1 });
 blogSchema.index({ category: 1, status: 1 });
+blogSchema.index({ contentType: 1, status: 1, createdAt: -1 });
 blogSchema.index({ author: 1, createdAt: -1 });
+blogSchema.index({ likedBy: 1 });
+blogSchema.index({ bookmarkedBy: 1 });
 
 export const Blog = mongoose.model("Blog", blogSchema);

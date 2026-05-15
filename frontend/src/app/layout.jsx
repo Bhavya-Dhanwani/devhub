@@ -1,4 +1,5 @@
 import "./globals.css";
+import { ReactQueryProvider } from "@/core/providers/ReactQueryProvider";
 import { ReduxProvider } from "@/core/providers/ReduxProvider";
 import { ToastProvider } from "@/core/providers/ToastProvider";
 import { AuthBootstrap } from "@/features/auth/ui/jsx/AuthBootstrap";
@@ -13,7 +14,9 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <ReduxProvider>
-          <AuthBootstrap>{children}</AuthBootstrap>
+          <ReactQueryProvider>
+            <AuthBootstrap>{children}</AuthBootstrap>
+          </ReactQueryProvider>
           <ToastProvider />
         </ReduxProvider>
       </body>

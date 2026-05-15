@@ -4,19 +4,26 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { getApiErrorMessage } from "@/core/api/apiClient";
-import { blogsApi } from "../api/blogs.api";
+import { blogsApi, projectsApi } from "../api/blogs.api";
 
 const HISTORY_LIMIT = 80;
 const HISTORY_DEBOUNCE_MS = 700;
 const HISTORY_THROTTLE_MS = 2500;
 
-export function useBlogComposer({ blogId = null } = {}) {
+function getContentApi(contentType = "blog") {
+  return contentType === "project" ? projectsApi : blogsApi;
+}
+
+export function useBlogComposer({ blogId = null, contentType = "blog" } = {}) {
   const router = useRouter();
   const isEditing = Boolean(blogId);
+  const [selectedContentType, setSelectedContentType] = useState(contentType === "project" ? "project" : "blog");
+  const contentApi = getContentApi(selectedContentType);
+  const contentLabel = selectedContentType === "project" ? "Project" : "Blog";
   const [title, setTitle] = useState("");
   const [subheading, setSubheading] = useState("");
   const [markdown, setMarkdown] = useState("");
-  const [category, setCategory] = useState("build logs");
+  const [category, setCategory] = useState(contentType === "project" ? "project" : "build logs");
   const [tags, setTags] = useState("");
   const [coverFile, setCoverFile] = useState(null);
   const [coverPreview, setCoverPreview] = useState("");
@@ -39,6 +46,7 @@ export function useBlogComposer({ blogId = null } = {}) {
     quote: "> A thoughtful quote or key takeaway",
     list: "- First point\n- Second point",
     code: "```js\nconsole.log(\"Hello DevHub\");\n```",
+    link: "[Link text](https://example.com)",
   }), []);
 
   const shortcuts = useMemo(() => [
@@ -48,6 +56,7 @@ export function useBlogComposer({ blogId = null } = {}) {
     ["Ctrl Alt 4", "Quote"],
     ["Ctrl Alt 5", "List"],
     ["Ctrl Alt 6", "Code"],
+    ["Ctrl Alt 7", "Link"],
   ], []);
 
   const createSnapshot = () => ({
@@ -107,7 +116,7 @@ export function useBlogComposer({ blogId = null } = {}) {
       setIsLoadingBlog(true);
 
       try {
-        const blog = await blogsApi.getMineById(blogId);
+        const blog = await contentApi.getMineById(blogId);
 
         if (isMounted) {
           hydrateBlog(blog);
@@ -129,7 +138,7 @@ export function useBlogComposer({ blogId = null } = {}) {
     return () => {
       isMounted = false;
     };
-  }, [blogId, router]);
+  }, [blogId, contentApi, router]);
 
   useEffect(() => () => {
     window.clearTimeout(debounceTimerRef.current);
@@ -357,6 +366,7 @@ export function useBlogComposer({ blogId = null } = {}) {
       4: "quote",
       5: "list",
       6: "code",
+      7: "link",
     };
     const nextBlockType = shortcutBlocks[event.key];
 
@@ -411,13 +421,13 @@ export function useBlogComposer({ blogId = null } = {}) {
       };
 
       if (isEditing) {
-        await blogsApi.update(blogId, payload);
+        await contentApi.update(blogId, payload);
       } else {
-        await blogsApi.create(payload);
+        await contentApi.create(payload);
       }
 
       setIsDirty(false);
-      toast.success(getSuccessMessage({ isEditing, status }));
+      toast.success(getSuccessMessage({ contentLabel, isEditing, status }));
       router.replace("/dashboard");
     } catch (error) {
       toast.error(getApiErrorMessage(error));
@@ -431,6 +441,7 @@ export function useBlogComposer({ blogId = null } = {}) {
     canRedo: future.length > 0,
     canUndo: past.length > 0,
     category,
+    contentType: selectedContentType,
     coverPreview,
     hasInlineImages: Object.keys(inlineImages).length > 0,
     isEditing,
@@ -453,6 +464,19 @@ export function useBlogComposer({ blogId = null } = {}) {
     redo,
     setBlockType,
     setCategory: (value) => commitField("category", value, { debounce: true }),
+    setContentType: (value) => {
+      const nextContentType = value === "project" ? "project" : "blog";
+
+      if (isEditing) {
+        return;
+      }
+
+      setSelectedContentType(nextContentType);
+
+      if (nextContentType === "project" && category === "build logs") {
+        setCategory("project");
+      }
+    },
     setMarkdown: (value) => commitField("markdown", value, { debounce: true }),
     setSubheading: (value) => commitField("subheading", value, { debounce: true }),
     setTags: (value) => commitField("tags", value, { debounce: true }),
@@ -461,10 +485,10 @@ export function useBlogComposer({ blogId = null } = {}) {
   };
 }
 
-function getSuccessMessage({ isEditing, status }) {
+function getSuccessMessage({ contentLabel, isEditing, status }) {
   if (isEditing) {
-    return status === "draft" ? "Draft updated." : "Blog updated and published.";
+    return status === "draft" ? "Draft updated." : `${contentLabel} updated and published.`;
   }
 
-  return status === "draft" ? "Draft saved." : "Blog published.";
+  return status === "draft" ? "Draft saved." : `${contentLabel} published.`;
 }

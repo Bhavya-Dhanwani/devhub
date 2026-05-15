@@ -183,6 +183,112 @@
   font-weight: 800;
 }
 
+.loadMoreState {
+  min-height: 72px;
+  display: grid;
+  place-items: center;
+  padding: 0 24px 32px;
+  color: #9ca8b5;
+  font-size: 0.84rem;
+  font-weight: 850;
+}
+
+.loadMoreDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(34, 229, 143, 0.55);
+}
+
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 0 32px 12px;
+}
+
+.skeletonCard {
+  min-height: 198px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  background: #101417;
+  padding: 18px;
+}
+
+.skeletonMeta,
+.skeletonStats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.skeletonMeta span,
+.skeletonStats span,
+.skeletonTitle,
+.skeletonText,
+.skeletonTextShort {
+  overflow: hidden;
+  position: relative;
+  border-radius: 999px;
+  background: #1b2024;
+}
+
+.skeletonMeta span::after,
+.skeletonStats span::after,
+.skeletonTitle::after,
+.skeletonText::after,
+.skeletonTextShort::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+  transform: translateX(-100%);
+  animation: skeletonPulse 1.2s ease-in-out infinite;
+}
+
+.skeletonMeta span:first-child {
+  width: 78px;
+  height: 26px;
+}
+
+.skeletonMeta span:last-child {
+  width: 118px;
+  height: 26px;
+}
+
+.skeletonTitle {
+  width: 82%;
+  height: 22px;
+  margin-top: 22px;
+}
+
+.skeletonText,
+.skeletonTextShort {
+  height: 13px;
+}
+
+.skeletonText {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.skeletonTextShort {
+  width: 68%;
+  margin-top: 9px;
+}
+
+.skeletonStats {
+  margin-top: 22px;
+}
+
+.skeletonStats span {
+  width: 58px;
+  height: 18px;
+}
+
 .emptyIcon {
   width: 62px;
   height: 62px;
@@ -215,6 +321,12 @@
   padding: 0 18px;
 }
 
+@keyframes skeletonPulse {
+  to {
+    transform: translateX(100%);
+  }
+}
+
 @media (max-width: 760px) {
   .shell {
     grid-template-columns: 1fr;
@@ -234,5 +346,10 @@
   .blogGrid {
     grid-template-columns: 1fr;
     padding: 14px 16px 24px;
+  }
+
+  .skeletonGrid {
+    grid-template-columns: 1fr;
+    padding: 0 16px 12px;
   }
 }

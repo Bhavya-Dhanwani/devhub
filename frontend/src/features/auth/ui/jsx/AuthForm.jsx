@@ -14,7 +14,6 @@ export function AuthForm({ mode }) {
     avatarError,
     avatarPreview,
     closeOtpModal,
-    error,
     form,
     isLoading,
     isSignup,
@@ -33,11 +32,6 @@ export function AuthForm({ mode }) {
           </span>
           <BrandWordmark />
         </Link>
-
-        <nav className={styles.nav} aria-label="Auth navigation">
-          <Link href="/">Documentation</Link>
-          <Link href="/">Pricing</Link>
-        </nav>
 
         <Link className={styles.helpLink} href="/" aria-label="Help">
           <HelpCircle size={20} />
@@ -128,8 +122,6 @@ export function AuthForm({ mode }) {
               <small>{form.formState.errors.password?.message}</small>
             </label>
 
-            {error ? <p className={styles.errorBox}>{error}</p> : null}
-
             <button className={styles.submit} disabled={isLoading} type="submit">
               {isLoading ? <Loader2 className={styles.spin} /> : null}
               {isSignup ? "Sign Up" : "Sign In"}
@@ -159,8 +151,8 @@ export function AuthForm({ mode }) {
       <footer className={styles.footer}>
         <p>&copy; 2024 <BrandWordmark /> Inc.</p>
         <div>
-          <Link href="/">Privacy Policy</Link>
-          <Link href="/">Terms of Service</Link>
+          <Link href="/privacy">Privacy Policy</Link>
+          <Link href="/terms">Terms of Service</Link>
           <Link href="/">Contact Support</Link>
         </div>
       </footer>

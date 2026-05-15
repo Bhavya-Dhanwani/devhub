@@ -39,4 +39,9 @@ export const env = {
   CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME || "",
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY || "",
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET || "",
+  TYPESENSE_HOST: process.env.TYPESENSE_HOST || "",
+  TYPESENSE_PORT: process.env.TYPESENSE_PORT || "8108",
+  TYPESENSE_PROTOCOL: process.env.TYPESENSE_PROTOCOL || "http",
+  TYPESENSE_ADMIN_API_KEY: process.env.TYPESENSE_ADMIN_API_KEY || "",
+  REDIS_URL: process.env.REDIS_URL || "",
 };

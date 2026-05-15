@@ -13,7 +13,7 @@ import { loginSchema, signupSchema } from "./auth.schemas";
 export function useAuthForm(mode) {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { status, error } = useAppSelector((state) => state.auth);
+  const { status } = useAppSelector((state) => state.auth);
   const isSignup = mode === "signup";
   const isLoading = status === "loading";
   const [avatarPreview, setAvatarPreview] = useState("");
@@ -92,7 +92,6 @@ export function useAuthForm(mode) {
     avatarError,
     avatarPreview,
     closeOtpModal,
-    error,
     form,
     isLoading,
     isSignup,

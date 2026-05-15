@@ -1,13 +1,22 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { blogsApi } from "../api/blogs.api";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { blogsApi, projectsApi } from "../api/blogs.api";
+
+function getContentApi(contentType = "blog") {
+  return contentType === "project" ? projectsApi : blogsApi;
+}
 
 export function usePublicBlogs(params = {}) {
   const [blogs, setBlogs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  const stableParams = useMemo(() => params, [params.limit, params.sort, params.status]);
+  const stableParams = useMemo(
+    () => params,
+    [params.category, params.contentType, params.limit, params.search, params.sort, params.status, params.tag, params.tags],
+  );
+  const contentApi = getContentApi(stableParams.contentType);
 
   useEffect(() => {
     let isMounted = true;
@@ -17,7 +26,7 @@ export function usePublicBlogs(params = {}) {
       setError("");
 
       try {
-        const payload = await blogsApi.getAll(stableParams);
+        const payload = await contentApi.getAll(stableParams);
 
         if (isMounted) {
           setBlogs(payload.blogs || []);
@@ -38,7 +47,33 @@ export function usePublicBlogs(params = {}) {
     return () => {
       isMounted = false;
     };
-  }, [stableParams]);
+  }, [contentApi, stableParams]);
 
   return { blogs, error, isLoading };
+}
+
+export function useInfinitePublicBlogs(params = {}) {
+  const stableParams = useMemo(
+    () => params,
+    [params.category, params.contentType, params.limit, params.search, params.sort, params.status, params.tag, params.tags],
+  );
+  const contentApi = getContentApi(stableParams.contentType);
+  const limit = Math.min(Math.max(Number.parseInt(stableParams.limit, 10) || 20, 1), 50);
+  const query = useInfiniteQuery({
+    queryKey: ["public-content", stableParams],
+    initialPageParam: 0,
+    queryFn: ({ pageParam }) =>
+      contentApi.getAll({
+        ...stableParams,
+        limit,
+        skip: pageParam,
+      }),
+    getNextPageParam: (lastPage) => lastPage?.pagination?.nextSkip ?? undefined,
+  });
+  const blogs = query.data?.pages.flatMap((page) => page.blogs || []) || [];
+
+  return {
+    ...query,
+    blogs,
+  };
 }

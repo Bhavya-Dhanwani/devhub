@@ -33,7 +33,6 @@ export function useResetPasswordForm() {
     } catch (error) {
       const errorMessage = getApiErrorMessage(error) || "Could not reset password.";
       setStatus("error");
-      setMessage(errorMessage);
       toast.error(errorMessage);
     }
   };

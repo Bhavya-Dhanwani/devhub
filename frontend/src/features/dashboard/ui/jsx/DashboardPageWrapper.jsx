@@ -14,13 +14,20 @@ export function DashboardPageWrapper() {
     blogsError,
     filteredBlogs,
     isBlogsLoading,
+    isEditProfileOpen,
+    isLoggingOut,
+    isUpdatingProfile,
     stats,
     tabs,
     user,
     username,
+    onConvertContentType,
     onDeleteBlog,
+    onUpdateProfile,
+    onLogout,
     onToggleBlogStatus,
     setActiveTab,
+    setIsEditProfileOpen,
   } = useDashboardPage();
 
   return (
@@ -29,12 +36,23 @@ export function DashboardPageWrapper() {
         <AppSidebar collapsed />
 
         <section className={styles.content}>
-          <DashboardProfileHeader stats={stats} user={user} username={username} />
+          <DashboardProfileHeader
+            isLoggingOut={isLoggingOut}
+            stats={stats}
+            user={user}
+            username={username}
+            isEditProfileOpen={isEditProfileOpen}
+            onLogout={onLogout}
+            isUpdatingProfile={isUpdatingProfile}
+            onEditProfile={setIsEditProfileOpen}
+            onUpdateProfile={onUpdateProfile}
+          />
           <DashboardTabs activeTab={activeTab} tabs={tabs} onTabChange={setActiveTab} />
           <DashboardBlogGrid
             error={blogsError}
             isLoading={isBlogsLoading}
             items={filteredBlogs}
+            onConvertType={onConvertContentType}
             onDelete={onDeleteBlog}
             onToggleStatus={onToggleBlogStatus}
           />

@@ -11,6 +11,15 @@ const userSchema = new mongoose.Schema(
       minlength: 2,
       maxlength: 80,
     },
+    username: {
+      type: String,
+      lowercase: true,
+      trim: true,
+      minlength: 3,
+      maxlength: 32,
+      sparse: true,
+      unique: true,
+    },
     email: {
       type: String,
       required: true,
@@ -23,6 +32,37 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
       trim: true,
+    },
+    banner: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    bio: {
+      type: String,
+      default: "",
+      trim: true,
+      maxlength: 180,
+    },
+    skills: {
+      type: [String],
+      default: [],
+    },
+    socialLinks: {
+      github: { type: String, default: "", trim: true },
+      linkedin: { type: String, default: "", trim: true },
+      website: { type: String, default: "", trim: true },
+      twitter: { type: String, default: "", trim: true },
+    },
+    portfolio: {
+      type: [
+        {
+          title: { type: String, trim: true, maxlength: 80 },
+          description: { type: String, trim: true, maxlength: 160 },
+          url: { type: String, trim: true, maxlength: 300 },
+        },
+      ],
+      default: [],
     },
     password: {
       type: String,
@@ -38,6 +78,16 @@ const userSchema = new mongoose.Schema(
     isEmailVerified: {
       type: Boolean,
       default: false,
+    },
+    followers: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+      default: [],
+    },
+    following: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+      default: [],
     },
     emailVerificationOtpHash: {
       type: String,
@@ -112,5 +162,8 @@ userSchema.methods.createPasswordResetToken = function createPasswordResetToken(
 userSchema.statics.hashPasswordResetToken = function hashPasswordResetToken(token) {
   return crypto.createHash("sha256").update(token).digest("hex");
 };
+
+userSchema.index({ followers: 1 });
+userSchema.index({ following: 1 });
 
 export const User = mongoose.model("User", userSchema);

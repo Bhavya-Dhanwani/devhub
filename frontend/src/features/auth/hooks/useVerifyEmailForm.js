@@ -29,13 +29,13 @@ export function useVerifyEmailForm(options = {}) {
     if (verifyEmailUser.fulfilled.match(action)) {
       setStatus("success");
       setMessage(action.payload.message);
+      toast.success(action.payload.message);
       onVerified?.(action.payload);
       return;
     }
 
     const errorMessage = action.payload || getApiErrorMessage(action.error);
     setStatus("error");
-    setMessage(errorMessage);
     toast.error(errorMessage);
   };
 
@@ -47,10 +47,10 @@ export function useVerifyEmailForm(options = {}) {
       const response = await authApi.resendVerificationOtp();
       setStatus("success");
       setMessage(response.message);
+      toast.success(response.message);
     } catch (error) {
       const errorMessage = getApiErrorMessage(error) || "Could not resend OTP.";
       setStatus("error");
-      setMessage(errorMessage);
       toast.error(errorMessage);
     }
   };

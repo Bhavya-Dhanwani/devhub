@@ -1,13 +1,13 @@
-import { BookText, MoreHorizontal, Pencil, Send, Trash2 } from "lucide-react";
+import { BookText, MoreHorizontal, Pencil, Repeat2, Send, Trash2 } from "lucide-react";
 import Link from "next/link";
 import styles from "../css/DashboardBlogGrid.module.css";
 
-export function DashboardBlogGrid({ error, isLoading, items, onDelete, onToggleStatus }) {
+export function DashboardBlogGrid({ error, isLoading, items, onConvertType, onDelete, onToggleStatus }) {
   if (isLoading) {
     return (
       <section className={styles.state} role="status">
         <BookText size={22} />
-        <p>Loading blogs...</p>
+        <p>Loading work...</p>
       </section>
     );
   }
@@ -25,7 +25,7 @@ export function DashboardBlogGrid({ error, isLoading, items, onDelete, onToggleS
     return (
       <section className={styles.state}>
         <BookText size={22} />
-        <p>No blogs found for this tab.</p>
+        <p>No blogs or projects found for this tab.</p>
       </section>
     );
   }
@@ -33,11 +33,11 @@ export function DashboardBlogGrid({ error, isLoading, items, onDelete, onToggleS
   return (
     <section className={styles.grid}>
       {items.map((item) => (
-        <article className={`${styles.card} ${styles[item.tone]}`.trim()} key={item.id}>
+        <article className={`${styles.card} ${styles[item.tone]}`.trim()} key={`${item.contentType}-${item.id}`}>
           <div className={styles.cardTop}>
             <div className={styles.badge}>
               <BookText size={14} />
-              {item.status}
+              {item.contentType} · {item.status}
             </div>
 
             <details className={styles.menu}>
@@ -52,6 +52,10 @@ export function DashboardBlogGrid({ error, isLoading, items, onDelete, onToggleS
                 <button type="button" onClick={() => onToggleStatus(item)}>
                   <Send size={14} />
                   {item.status === "published" ? "Move to draft" : "Publish"}
+                </button>
+                <button type="button" onClick={() => onConvertType(item)}>
+                  <Repeat2 size={14} />
+                  {item.contentType === "project" ? "Convert to blog" : "Convert to project"}
                 </button>
                 <button className={styles.dangerAction} type="button" onClick={() => onDelete(item)}>
                   <Trash2 size={14} />

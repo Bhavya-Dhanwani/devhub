@@ -2,22 +2,19 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
-  Bell,
   Bookmark,
   ChevronLeft,
   ChevronRight,
-  Compass,
+  Code2,
   FileText,
   Folder,
   Home,
   Link2,
   Menu,
-  MessageCircle,
   Search,
-  Trophy,
 } from "lucide-react";
 import logo from "@/assets/images/logo.png";
 import { useAppSelector } from "@/core/store/hooks";
@@ -28,10 +25,9 @@ import styles from "./AppSidebar.module.css";
 const mainItems = [
   { href: "/", icon: Home, label: "Home" },
   { href: "/blogs", icon: Folder, label: "Blogs" },
-  { href: "/", icon: Bookmark, label: "Bookmarks" },
-  { href: "/", icon: MessageCircle, label: "Forums" },
-  { href: "/", icon: Trophy, label: "Hackathons" },
-  { href: "/", icon: Search, label: "Search", shortcut: "Ctrl K" },
+  { href: "/projects", icon: Code2, label: "Projects" },
+  { href: "/bookmarks", icon: Bookmark, label: "Bookmarks" },
+  { href: "/search", icon: Search, label: "Search", shortcut: "Ctrl K" },
 ];
 
 const authorItems = [
@@ -39,46 +35,56 @@ const authorItems = [
   { href: "/dashboard", icon: FileText, label: "Dashboard" },
 ];
 
-const sidebarStorageKeys = {
-  desktop: "devhub-sidebar-collapsed-desktop",
-  mobile: "devhub-sidebar-collapsed-mobile",
-};
+const sidebarPreferenceKey = "devhub.sidebarCollapsed";
+const mobileSidebarQuery = "(max-width: 760px)";
 
 export function AppSidebar({ collapsed = false }) {
   const [isCollapsed, setIsCollapsed] = useState(collapsed);
   const pathname = usePathname();
+  const router = useRouter();
   const { status, user } = useAppSelector(selectAuth);
   const isLoggedIn = status === "authenticated";
 
   useEffect(() => {
-    const mobileQuery = window.matchMedia("(max-width: 760px)");
+    const onKeyDown = (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        router.push("/search");
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [router]);
+
+  useEffect(() => {
+    const mobileQuery = window.matchMedia(mobileSidebarQuery);
 
     const syncSidebarMode = () => {
-      const storageKey = getSidebarStorageKey(mobileQuery.matches);
-      const savedState = window.localStorage.getItem(storageKey);
-      const nextCollapsed = savedState === null ? mobileQuery.matches || collapsed : savedState === "true";
-
-      setIsCollapsed(nextCollapsed);
-
-      if (savedState === null) {
-        window.localStorage.setItem(storageKey, String(nextCollapsed));
-      }
+      setIsCollapsed(mobileQuery.matches ? true : getStoredSidebarPreference(collapsed));
     };
 
     syncSidebarMode();
     mobileQuery.addEventListener("change", syncSidebarMode);
+    window.addEventListener("storage", syncSidebarMode);
 
     return () => {
       mobileQuery.removeEventListener("change", syncSidebarMode);
+      window.removeEventListener("storage", syncSidebarMode);
     };
   }, [collapsed]);
 
   const updateSidebar = (value) => {
     setIsCollapsed((current) => {
       const nextCollapsed = typeof value === "function" ? value(current) : value;
-      const isMobile = window.matchMedia("(max-width: 760px)").matches;
+      const isMobile = window.matchMedia(mobileSidebarQuery).matches;
 
-      window.localStorage.setItem(getSidebarStorageKey(isMobile), String(nextCollapsed));
+      if (!isMobile) {
+        window.localStorage.setItem(sidebarPreferenceKey, String(nextCollapsed));
+      }
 
       return nextCollapsed;
     });
@@ -92,13 +98,21 @@ export function AppSidebar({ collapsed = false }) {
         </button>
         <Link className={styles.mobileBrand} href="/">
           <Image src={logo} alt="" priority sizes="24px" />
-          <BrandWordmark />
+          <span className={styles.mobileBrandText}>
+            <span className={styles.mobileBrandDev}>Dev</span>
+            <span className={styles.mobileBrandHub}>Hub</span>
+          </span>
         </Link>
         <div className={styles.mobileActions}>
-          <Search size={19} />
-          <Bell size={18} />
+          <Link href="/search" aria-label="Search">
+            <Search size={19} />
+          </Link>
           <Link2 size={18} />
-          <Link className={styles.mobileUser} href="/dashboard">B</Link>
+          {isLoggedIn && user?.avatar ? (
+            <Link className={styles.mobileUser} href="/dashboard" aria-label="Profile">
+              <Image src={user.avatar} alt="" width={24} height={24} unoptimized />
+            </Link>
+          ) : null}
         </div>
       </header>
 
@@ -141,34 +155,9 @@ export function AppSidebar({ collapsed = false }) {
           ))}
         </nav>
 
-      {!isCollapsed ? (
-        <div className={styles.newsCard}>
-          <div>
-            <span>What&apos;s new</span>
-            <button type="button" aria-label="Dismiss update">×</button>
-          </div>
-          <strong>GraphQL API access is moving to a paid plan</strong>
-          <p><BrandWordmark /> API access is changing soon. Early builders keep free credits.</p>
-        </div>
-      ) : null}
-
       <div className={isCollapsed ? styles.collapsedFooter : styles.sidebarFooter}>
-        <Link className={isCollapsed ? styles.iconItem : styles.exploreLink} href="#feed" title="Explore">
-          <Compass size={16} />
-          {!isCollapsed ? (
-            <>
-              Explore
-              <span>New</span>
-            </>
-          ) : null}
-        </Link>
-
         {isLoggedIn ? (
           <>
-            <Link className={isCollapsed ? styles.iconItem : styles.notificationLink} href="/dashboard" title="Notifications">
-              <Bell size={16} />
-              {!isCollapsed ? "Notifications" : null}
-            </Link>
             <Link className={isCollapsed ? styles.userDot : styles.userLink} href="/dashboard" title="Profile">
               <UserAvatar user={user} />
               {!isCollapsed ? (
@@ -193,8 +182,8 @@ export function AppSidebar({ collapsed = false }) {
         {!isCollapsed ? (
           <>
             <div className={styles.footerLinks}>
-              <Link href="/">Terms</Link>
-              <Link href="/">Privacy</Link>
+              <Link href="/terms">Terms</Link>
+              <Link href="/privacy">Privacy</Link>
               <Link href="/">Sitemap</Link>
             </div>
             <p>© 2026 <BrandWordmark /> Inc.</p>
@@ -204,10 +193,6 @@ export function AppSidebar({ collapsed = false }) {
       </aside>
     </>
   );
-}
-
-function getSidebarStorageKey(isMobile) {
-  return isMobile ? sidebarStorageKeys.mobile : sidebarStorageKeys.desktop;
 }
 
 function SidebarLink({ collapsed, isActive, item }) {
@@ -234,6 +219,20 @@ function UserAvatar({ user }) {
   return (user?.name || "B").slice(0, 1).toUpperCase();
 }
 
+function getStoredSidebarPreference(fallback) {
+  const storedValue = window.localStorage.getItem(sidebarPreferenceKey);
+
+  if (storedValue === "true") {
+    return true;
+  }
+
+  if (storedValue === "false") {
+    return false;
+  }
+
+  return fallback;
+}
+
 function isActive(pathname, href, label) {
   if (label === "Home") {
     return pathname === "/";
@@ -241,6 +240,18 @@ function isActive(pathname, href, label) {
 
   if (label === "Blogs") {
     return pathname === "/blogs" || pathname.startsWith("/blogs/");
+  }
+
+  if (label === "Projects") {
+    return pathname === "/projects" || pathname.startsWith("/projects/");
+  }
+
+  if (label === "Bookmarks") {
+    return pathname === "/bookmarks";
+  }
+
+  if (label === "Search") {
+    return pathname === "/search";
   }
 
   return pathname === href && href !== "/";

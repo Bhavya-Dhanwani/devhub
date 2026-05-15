@@ -21,6 +21,17 @@ export const uploadProfilePicture = multer({
   },
 }).single("avatar");
 
+export const uploadProfileAssets = multer({
+  storage,
+  fileFilter: imageFileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
+}).fields([
+  { name: "avatar", maxCount: 1 },
+  { name: "banner", maxCount: 1 },
+]);
+
 export const uploadBlogCover = multer({
   storage,
   fileFilter: imageFileFilter,
