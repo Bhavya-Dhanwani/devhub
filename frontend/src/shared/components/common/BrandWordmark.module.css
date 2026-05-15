@@ -1,0 +1,13 @@
+.wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  color: #ffffff;
+}
+
+.dev {
+  color: #ffffff;
+}
+
+.hub {
+  color: var(--primary);
+}

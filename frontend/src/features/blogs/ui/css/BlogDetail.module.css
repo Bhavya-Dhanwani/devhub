@@ -1,0 +1,247 @@
+.shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  background: #131719;
+  color: var(--foreground);
+}
+
+.content {
+  min-width: 0;
+  margin: 6px 6px 6px 0;
+  border: 1px solid #30363d;
+  border-radius: 14px;
+  background: #141819;
+  padding: 28px min(7vw, 72px) 72px;
+}
+
+.backLink,
+.meta,
+.author,
+.author span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.backLink {
+  gap: 8px;
+  border: 0;
+  background: transparent;
+  color: #c8d1db;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 850;
+  padding: 0;
+}
+
+.backLink:hover {
+  color: var(--primary-light);
+}
+
+.cover {
+  position: relative;
+  width: min(100%, 920px);
+  height: min(42vw, 360px);
+  min-height: 220px;
+  margin: 30px auto 0;
+  overflow: hidden;
+  border: 1px solid #30363d;
+  border-radius: 14px;
+  background: #101417;
+}
+
+.cover img {
+  object-fit: cover;
+}
+
+.header,
+.body {
+  width: min(100%, 760px);
+  margin-inline: auto;
+}
+
+.header {
+  margin-top: 38px;
+}
+
+.meta {
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.meta span {
+  border-radius: 999px;
+  background: #1b2024;
+  color: #b9c3ce;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.meta span:first-child {
+  background: rgba(34, 229, 143, 0.1);
+  color: var(--primary-light);
+}
+
+.header h1 {
+  margin-top: 18px;
+  color: #ffffff;
+  font-size: clamp(2.2rem, 5vw, 4.6rem);
+  font-weight: 950;
+  letter-spacing: -0.04em;
+  line-height: 1.04;
+}
+
+.header > p {
+  margin-top: 18px;
+  color: #c7d0db;
+  font-size: 1.2rem;
+  line-height: 1.55;
+}
+
+.author {
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  color: #aeb8c4;
+}
+
+.author strong {
+  color: #ffffff;
+}
+
+.author span {
+  gap: 6px;
+}
+
+.body {
+  margin-top: 42px;
+}
+
+.body h2,
+.body h3,
+.body h4 {
+  color: #ffffff;
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 1.22;
+  overflow-wrap: anywhere;
+}
+
+.body h2 {
+  margin-top: 34px;
+  font-size: 1.72rem;
+}
+
+.body h3 {
+  margin-top: 28px;
+  font-size: 1.38rem;
+}
+
+.body h4 {
+  margin-top: 24px;
+  font-size: 1.14rem;
+}
+
+.body p,
+.body li,
+.body blockquote {
+  max-width: 100%;
+  overflow: hidden;
+  color: #d8e1eb;
+  font-size: 1.08rem;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.body p + p,
+.body h2 + p,
+.body h3 + p,
+.body h4 + p,
+.body ul + p,
+.body blockquote + p,
+.contentImage + p,
+.body p + .contentImage {
+  margin-top: 20px;
+}
+
+.body ul {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0 0 22px;
+}
+
+.body li {
+  padding-left: 4px;
+}
+
+.body li::marker {
+  color: var(--primary-light);
+}
+
+.body blockquote {
+  margin-top: 22px;
+  border-left: 3px solid var(--primary);
+  background: #101417;
+  border-radius: 0 12px 12px 0;
+  padding: 14px 18px;
+  color: #cbd5df;
+}
+
+.contentImage {
+  margin: 26px 0;
+}
+
+.contentImage img {
+  max-width: 100%;
+  max-height: 520px;
+  display: block;
+  object-fit: contain;
+  margin-inline: auto;
+}
+
+.codeBlock {
+  overflow-x: auto;
+  margin-top: 24px;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  background: #0b0f12;
+  color: #d8e1eb;
+  padding: 16px;
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.codeBlock code {
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+  white-space: pre;
+}
+
+.state {
+  min-height: 70vh;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 14px;
+  color: #c8d1db;
+  text-align: center;
+}
+
+.state svg {
+  color: var(--primary-light);
+}
+
+@media (max-width: 760px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .content {
+    margin: 0;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+    padding: 22px 18px 54px;
+  }
+}
