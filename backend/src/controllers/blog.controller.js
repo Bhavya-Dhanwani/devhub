@@ -14,13 +14,13 @@ export const createBlogController = asyncHandler(async (req, res) => {
 });
 
 export const getAllBlogsController = asyncHandler(async (req, res) => {
-  const payload = await blogService.getAllBlogsService(req.query, req.user);
+  const payload = await blogService.getAllBlogsService(withRouteContentType(req), req.user);
 
   res.status(200).json(new ApiResponse(200, payload, "Blogs fetched successfully"));
 });
 
 export const getBlogBySlugController = asyncHandler(async (req, res) => {
-  const blog = await blogService.getBlogBySlugService(req.params.slug, req.user, req.query);
+  const blog = await blogService.getBlogBySlugService(req.params.slug, req.user, withRouteContentType(req));
 
   res.status(200).json(new ApiResponse(200, { blog }, "Blog fetched successfully"));
 });
@@ -38,7 +38,7 @@ export const getMyBlogByIdController = asyncHandler(async (req, res) => {
 export const getBlogsByUserController = asyncHandler(async (req, res) => {
   const payload = await blogService.getBlogsByUserService({
     userId: req.params.userId,
-    query: req.query,
+    query: withRouteContentType(req),
     viewer: req.user,
   });
 
@@ -48,7 +48,7 @@ export const getBlogsByUserController = asyncHandler(async (req, res) => {
 export const getMyBlogsController = asyncHandler(async (req, res) => {
   const payload = await blogService.getMyBlogsService({
     userId: req.user.id,
-    query: req.query,
+    query: withRouteContentType(req),
   });
 
   res.status(200).json(new ApiResponse(200, payload, "Your blogs fetched successfully"));
@@ -126,9 +126,16 @@ export const updateBlogContentTypeController = asyncHandler(async (req, res) => 
 
 export const getBookmarkedBlogsController = asyncHandler(async (req, res) => {
   const payload = await blogService.getBookmarkedBlogsService({
-    query: req.query,
+    query: withRouteContentType(req),
     userId: req.user.id,
   });
 
   res.status(200).json(new ApiResponse(200, payload, "Bookmarks fetched successfully"));
 });
+
+function withRouteContentType(req) {
+  return {
+    ...req.query,
+    contentType: req.contentType,
+  };
+}

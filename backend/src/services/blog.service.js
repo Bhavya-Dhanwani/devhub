@@ -60,14 +60,22 @@ export async function getAllBlogsService(query, viewer) {
 
 export async function getBlogBySlugService(identifier, viewer, query = {}) {
   const contentTypeFilter = buildContentTypeFilter(query.contentType);
-  const filter = mongoose.Types.ObjectId.isValid(identifier)
+  const isObjectId = mongoose.Types.ObjectId.isValid(identifier);
+  const filter = isObjectId
     ? { _id: identifier, ...contentTypeFilter }
     : { slug: identifier, ...contentTypeFilter };
 
-  const blog = await Blog.findOne(filter)
+  let blog = await Blog.findOne(filter)
     .select(blogDetailSelect)
     .populate("author", authorDetailSelect)
     .lean();
+
+  if (!blog && isObjectId && normalizeContentType(query.contentType) === "project") {
+    blog = await Blog.findById(identifier)
+      .select(blogDetailSelect)
+      .populate("author", authorDetailSelect)
+      .lean();
+  }
 
   if (!blog) {
     throw new ApiError(404, normalizeContentType(query.contentType) === "project" ? "Project not found." : "Blog not found.");

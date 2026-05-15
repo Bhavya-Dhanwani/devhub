@@ -29,15 +29,18 @@ import { createBlogSchema, updateBlogSchema } from "../validators/blog.validator
 const router = Router();
 
 router.use((req, _res, next) => {
-  const routeContentType = req.baseUrl.endsWith("/projects") ? "project" : "blog";
+  const routeContentType = req.routeContentType || (isProjectRoute(req) ? "project" : "blog");
   const requestedContentType = String(req.query.contentType || "").trim();
   const canUseRequestedContentType = req.method === "GET" && ["all", "blog", "project"].includes(requestedContentType);
   const contentType = canUseRequestedContentType ? requestedContentType : routeContentType;
 
   req.contentType = contentType === "all" ? routeContentType : contentType;
-  req.query.contentType = contentType;
   next();
 });
+
+function isProjectRoute(req) {
+  return [req.baseUrl, req.originalUrl, req.url].some((value) => String(value || "").includes("/projects"));
+}
 
 router.post("/", authenticate, uploadBlogCover, validateBody(createBlogSchema), createBlogController);
 router.get("/", optionalAuthenticate, getAllBlogsController);

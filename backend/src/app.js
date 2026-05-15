@@ -26,12 +26,19 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
-app.use("/api/blogs", blogRoutes);
-app.use("/api/projects", blogRoutes);
+app.use("/api/blogs", setRouteContentType("blog"), blogRoutes);
+app.use("/api/projects", setRouteContentType("project"), blogRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/protected", protectedRoutes);
 
 app.use(errorHandler);
+
+function setRouteContentType(contentType) {
+  return (req, _res, next) => {
+    req.routeContentType = contentType;
+    next();
+  };
+}
 
 export default app;
