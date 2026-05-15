@@ -61,7 +61,7 @@ export function BlogResultGrid({
                   <span>{blog.category || "devhub"}</span>
                   <span>{formatRelativeDate(blog.createdAt)}</span>
                 </div>
-                <BookmarkButton blog={blog} className={styles.cardBookmark} />
+                <BookmarkButton blog={blog} className={styles.cardBookmark} contentType={blog.contentType} />
               </div>
               <h2><Highlight text={blog.title} query={query} /></h2>
               <p><Highlight text={blog.excerpt || blog.subheading} query={query} /></p>

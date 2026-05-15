@@ -61,8 +61,8 @@ export async function getAllBlogsService(query, viewer) {
 export async function getBlogBySlugService(identifier, viewer, query = {}) {
   const contentTypeFilter = buildContentTypeFilter(query.contentType);
   const filter = mongoose.Types.ObjectId.isValid(identifier)
-    ? { _id: identifier, status: "published", ...contentTypeFilter }
-    : { slug: identifier, status: "published", ...contentTypeFilter };
+    ? { _id: identifier, ...contentTypeFilter }
+    : { slug: identifier, ...contentTypeFilter };
 
   const blog = await Blog.findOne(filter)
     .select(blogDetailSelect)
@@ -266,7 +266,7 @@ export async function updateBlogBookmarkService({ blogId, bookmarked, contentTyp
     : { $pull: { bookmarkedBy: userId } };
 
   const blog = await Blog.findOneAndUpdate(
-    { _id: blogId, status: "published", ...buildContentTypeFilter(contentType) },
+    { _id: blogId, ...buildContentTypeFilter(contentType) },
     update,
     { projection: { bookmarkedBy: 1 }, returnDocument: "after" },
   )
@@ -305,7 +305,7 @@ export async function updateBlogContentTypeService({ blogId, contentType, userId
 export async function getBlogSocialStateService({ blogId, contentType = "blog", userId }) {
   assertValidObjectId(blogId, "Invalid blog id.");
 
-  const blog = await Blog.findOne({ _id: blogId, status: "published", ...buildContentTypeFilter(contentType) })
+  const blog = await Blog.findOne({ _id: blogId, ...buildContentTypeFilter(contentType) })
     .select("+likedBy +bookmarkedBy likesCount")
     .lean();
 
@@ -326,7 +326,6 @@ export async function getBookmarkedBlogsService({ query, userId }) {
   const { page, limit, skip } = parsePagination(query, 50);
   const filter = {
     ...buildContentTypeFilter(query.contentType),
-    status: "published",
     bookmarkedBy: userId,
   };
 

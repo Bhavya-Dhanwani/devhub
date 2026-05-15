@@ -7,7 +7,7 @@ import { getApiErrorMessage } from "@/core/api/apiClient";
 import { useAppSelector } from "@/core/store/hooks";
 import { selectAuth } from "@/features/auth/state/authSlice";
 import { AppSidebar } from "@/shared/components/layout/AppSidebar";
-import { blogsApi } from "../../api/blogs.api";
+import { blogsApi, projectsApi } from "../../api/blogs.api";
 import { blogSocialChangedEvent } from "../../lib/socialEvents";
 import { BlogResultGrid } from "./BlogResultGrid";
 import styles from "../css/SearchBookmarks.module.css";
@@ -32,10 +32,13 @@ export function BookmarksPage() {
       setError("");
 
       try {
-        const payload = await blogsApi.getBookmarks({ limit: 50 });
+        const [blogPayload, projectPayload] = await Promise.all([
+          blogsApi.getBookmarks({ limit: 50 }),
+          projectsApi.getBookmarks({ limit: 50 }),
+        ]);
 
         if (isMounted) {
-          setBlogs(payload.blogs || []);
+          setBlogs(mergeBookmarks(blogPayload.blogs, projectPayload.blogs));
         }
       } catch (loadError) {
         if (isMounted) {
@@ -66,21 +69,21 @@ export function BookmarksPage() {
           <h1>Bookmarks</h1>
           <div className={styles.headerNote}>
             <Bookmark size={18} />
-            <span>Blogs you save are stored with your DevHub account.</span>
+            <span>Blogs and projects you save are stored with your DevHub account.</span>
           </div>
         </header>
 
         {status !== "authenticated" ? (
           <section className={styles.emptyState}>
             <Bookmark size={34} />
-            <p>Please sign in to view saved blogs.</p>
+            <p>Please sign in to view saved blogs and projects.</p>
             <Link href="/login">Sign in</Link>
           </section>
         ) : (
           <BlogResultGrid
             backHref="/bookmarks"
             blogs={blogs}
-            emptyText="No bookmarks yet. Save a blog and it will appear here."
+            emptyText="No bookmarks yet. Save a blog or project and it will appear here."
             error={error}
             isLoading={isLoading}
             loadingText="Loading bookmarks..."
@@ -89,4 +92,22 @@ export function BookmarksPage() {
       </section>
     </main>
   );
+}
+
+function mergeBookmarks(blogs = [], projects = []) {
+  const bookmarksById = new Map();
+
+  for (const item of [...blogs, ...projects]) {
+    if (!item?._id) {
+      continue;
+    }
+
+    bookmarksById.set(String(item._id), {
+      ...item,
+      contentType: item.contentType === "project" ? "project" : "blog",
+    });
+  }
+
+  return [...bookmarksById.values()]
+    .sort((first, second) => new Date(second.updatedAt || second.createdAt).getTime() - new Date(first.updatedAt || first.createdAt).getTime());
 }

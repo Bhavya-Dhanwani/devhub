@@ -17,8 +17,13 @@ import styles from "../css/BlogDetail.module.css";
 export function BlogDetailPage({ backHref = "/", contentType = "blog", identifier, preview = false, slug }) {
   const router = useRouter();
   const contentApi = contentType === "project" ? projectsApi : blogsApi;
+  const contentLabel = contentType === "project" ? "project" : "blog";
   const { status, user } = useAppSelector(selectAuth);
-  const { blog, error, isLoading } = useBlogDetail(identifier || slug, { contentType, preview });
+  const { blog, error, isLoading } = useBlogDetail(identifier || slug, {
+    allowOwnerFallback: status === "authenticated",
+    contentType,
+    preview,
+  });
   const [comments, setComments] = useState([]);
   const [commentsError, setCommentsError] = useState("");
   const [commentText, setCommentText] = useState("");
@@ -128,8 +133,8 @@ export function BlogDetailPage({ backHref = "/", contentType = "blog", identifie
   const shareBlog = async () => {
     const shareUrl = window.location.href;
     const sharePayload = {
-      title: blog?.title || "DevHub blog",
-      text: blog?.subheading || "Read this blog on DevHub.",
+      title: blog?.title || `DevHub ${contentLabel}`,
+      text: blog?.subheading || `Read this ${contentLabel} on DevHub.`,
       url: shareUrl,
     };
 
@@ -143,7 +148,7 @@ export function BlogDetailPage({ backHref = "/", contentType = "blog", identifie
       toast.success("Blog link copied.");
     } catch (shareError) {
       if (shareError?.name !== "AbortError") {
-        toast.error("Could not share this blog.");
+        toast.error(`Could not share this ${contentLabel}.`);
       }
     }
   };
@@ -266,7 +271,7 @@ export function BlogDetailPage({ backHref = "/", contentType = "blog", identifie
         {isLoading ? (
           <section className={styles.state} role="status">
             <BookText size={28} />
-            <p>Loading blog...</p>
+            <p>Loading {contentLabel}...</p>
           </section>
         ) : null}
 

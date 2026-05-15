@@ -24,7 +24,7 @@ export function useBlogDetail(identifier, options = {}) {
         const contentApi = getContentApi(options.contentType);
         const nextBlog = options.preview
           ? await contentApi.getMineById(identifier)
-          : await getPublishedOrOwnedContent(contentApi, identifier, options.contentType);
+          : await getPublishedOrOwnedContent(contentApi, identifier, options);
 
         if (isMounted) {
           setBlog(nextBlog);
@@ -35,7 +35,7 @@ export function useBlogDetail(identifier, options = {}) {
         }
       } catch (loadError) {
         if (isMounted) {
-          setError(getApiErrorMessage(loadError));
+          setError(getContentErrorMessage(loadError, options.contentType));
         }
       } finally {
         if (isMounted) {
@@ -51,16 +51,26 @@ export function useBlogDetail(identifier, options = {}) {
     return () => {
       isMounted = false;
     };
-  }, [identifier, options.contentType, options.preview]);
+  }, [identifier, options.allowOwnerFallback, options.contentType, options.preview]);
 
   return { blog, error, isLoading };
 }
 
-async function getPublishedOrOwnedContent(contentApi, identifier, contentType) {
+function getContentErrorMessage(error, contentType) {
+  const message = getApiErrorMessage(error);
+
+  if (contentType === "project" && message.toLowerCase().includes("blog not found")) {
+    return "Project not found. It may have been deleted or the link may be incorrect.";
+  }
+
+  return message;
+}
+
+async function getPublishedOrOwnedContent(contentApi, identifier, options) {
   try {
     return await contentApi.getById(identifier);
   } catch (error) {
-    if (contentType !== "project") {
+    if (options.contentType !== "project" || !options.allowOwnerFallback) {
       throw error;
     }
 
